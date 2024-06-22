@@ -1,10 +1,42 @@
+"use client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { FormEvent, useState } from "react";
 
 export default function LoginPage() {
+  const { push } = useRouter();
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    setError("");
+    setIsLoading(true);
+    const res = await fetch("/api/auth/register", {
+      method: "POST",
+
+      body: JSON.stringify({
+        fullname: e.target.fullname.value,
+        email: e.target.email.value,
+        password: e.target.password.value,
+      }),
+    });
+
+    if (res.status == 200) {
+      e.target.reset();
+      push("/login");
+      setIsLoading(false);
+    } else {
+      setError("Email Already Exist");
+      setIsLoading(false);
+    }
+  };
   return (
-    <div className="h-screen w-100 flex items-center justify-center">
-      <div className="bg-white shadow-md border border-gray-200 rounded-lg max-w-sm p-4 sm:p-6 lg:p-8 dark:bg-gray-800 dark:border-gray-700">
-        <form className="space-y-6" action="#">
+    <div className="h-screen w-100 flex items-center justify-center flex-col">
+      {error != "" && (
+        <div className="text-red-600 font-bold mb-3">{error}</div>
+      )}
+      <div className="bg-white shadow-md border border-gray-200 rounded-lg w-96 p-4 sm:p-6 lg:p-8 dark:bg-gray-800 dark:border-gray-700">
+        <form className="space-y-6" onSubmit={(e) => handleSubmit(e)}>
           <h3 className="text-xl font-medium text-gray-900 dark:text-white">
             Sign Up to our platform
           </h3>
@@ -59,13 +91,14 @@ export default function LoginPage() {
           <button
             type="submit"
             className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            disabled={isLoading}
           >
-            Register account
+            {isLoading ? "Loading....." : "Register account"}
           </button>
           <div className="text-sm font-medium text-gray-500 dark:text-gray-300">
             Already registered?{" "}
             <Link
-              href="/register"
+              href="/login"
               className="text-blue-700 hover:underline dark:text-blue-500"
             >
               Login
