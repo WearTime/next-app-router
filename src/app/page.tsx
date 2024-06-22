@@ -1,6 +1,9 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"
+  ),
   title: "Home",
   description: "Application for study about NextJs",
   authors: [{ name: "Weartime", url: "http://localhost:3000" }],
